@@ -9,10 +9,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))    
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.AddAuthorization();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000") 
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials(); // Allow credentials (cookies)
+    });
+});
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false;
@@ -27,13 +37,12 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
-    // Create roles if they don't exist
     await CreateRolesAsync(roleManager);
 
-    // Create admin user if it doesn't exist
     await CreateAdminUserAsync(userManager);
 }
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -43,10 +52,17 @@ if (app.Environment.IsDevelopment())
     dbContext.Database.Migrate();
 }
 
-app.MapControllers();
 app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseCors("AllowReactApp");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
 app.Run();
-return;
 
 async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager)
 {
@@ -63,25 +79,22 @@ async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager)
 
 async Task CreateAdminUserAsync(UserManager<IdentityUser> userManager)
 {
-    const string adminEmail = "admin";
+    const string adminEmail = "admin@gmail.com";
     const string adminPassword = "Admin1!";
 
-    // Check if the admin user already exists
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
     if (adminUser == null)
     {
-        // Create the admin user
         adminUser = new IdentityUser
         {
             UserName = adminEmail,
             Email = adminEmail,
-            EmailConfirmed = true // Mark email as confirmed
+            EmailConfirmed = true 
         };
 
         var createUserResult = await userManager.CreateAsync(adminUser, adminPassword);
         if (createUserResult.Succeeded)
         {
-            // Assign the "ADMIN" role to the admin user
             await userManager.AddToRoleAsync(adminUser, "ADMIN");
             Console.WriteLine("Admin user created successfully.");
         }
