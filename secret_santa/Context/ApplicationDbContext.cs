@@ -13,5 +13,7 @@ namespace secret_santa.Context
         }
 
         public DbSet<Pair> Pairs { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+
     }
 }

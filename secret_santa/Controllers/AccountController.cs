@@ -61,5 +61,20 @@ namespace secret_santa.Controllers
             await _signInManager.SignOutAsync();
             return Ok(new { message = "User logged out successfully!" });
         }
+        
+        [HttpGet("check-session")]
+        public async Task<IActionResult> CheckSession()
+        {
+            var user = await _userManager.GetUserAsync(User); // Get the current user
+            if (user == null)
+            {
+                return Unauthorized(); 
+            }
+
+            var roles = await _userManager.GetRolesAsync(user); 
+            var role = roles.Contains("ADMIN") ? "ADMIN" : "USER"; 
+
+            return Ok(new { email = user.Email, role }); 
+        }
     }
 }

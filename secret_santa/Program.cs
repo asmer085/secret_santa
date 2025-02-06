@@ -4,14 +4,17 @@ using secret_santa.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
+// Configure the database context.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// Configure CORS.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", builder =>
@@ -23,14 +26,24 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configure Identity.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false;
     options.SignIn.RequireConfirmedAccount = false;
-}).AddEntityFrameworkStores<ApplicationDbContext>();
+})
+.AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Configure application cookies.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None; // Allow cross-site cookies
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are sent over HTTPS
+});
 
 var app = builder.Build();
 
+// Create roles and admin user on application startup.
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -38,7 +51,6 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
 
     await CreateRolesAsync(roleManager);
-
     await CreateAdminUserAsync(userManager);
 }
 
@@ -64,6 +76,7 @@ app.MapControllers();
 
 app.Run();
 
+// Helper method to create roles.
 async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager)
 {
     string[] roleNames = { "ADMIN", "USER" };
@@ -77,6 +90,7 @@ async Task CreateRolesAsync(RoleManager<IdentityRole> roleManager)
     }
 }
 
+// Helper method to create the admin user.
 async Task CreateAdminUserAsync(UserManager<IdentityUser> userManager)
 {
     const string adminEmail = "admin@gmail.com";

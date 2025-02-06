@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api'; 
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
 
@@ -7,20 +7,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const fetchUser = async () => {
       try {
-        setUser(JSON.parse(savedUser));
+        const response = await api.get('/Account/check-session'); 
+        const userData = response.data;
+        setUser(userData); 
       } catch (error) {
-        console.error('Failed to parse user data from localStorage:', error);
-        localStorage.removeItem('user');
+        console.error('Failed to fetch user session:', error);
+        setUser(null); 
       }
-    }
+    };
+
+    fetchUser();
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = async () => {
@@ -29,8 +31,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Failed to logout:', error);
     }
-    setUser(null);
-    localStorage.removeItem('user');
+    setUser(null); 
   };
 
   return (
