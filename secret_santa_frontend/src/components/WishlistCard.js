@@ -60,7 +60,13 @@ function WishlistCard({ userEmail, isEditable, onClose }) {
       <Card.Body>
         {error && <Alert variant="danger">{error}</Alert>}
         {isEditable && (
-          <Form className="mb-3">
+          <Form
+            className="mb-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddItem();
+            }}
+          >
             <Form.Group>
               <Form.Control
                 type="text"
@@ -69,10 +75,10 @@ function WishlistCard({ userEmail, isEditable, onClose }) {
                 onChange={(e) => setNewItemName(e.target.value)}
               />
             </Form.Group>
-            <Button variant="danger" className="mt-2" onClick={handleAddItem}>
+            <Button variant="danger" className="mt-2" type="submit">
               Add Item
             </Button>
-          </Form>
+          </Form>  
         )}
         <div className="d-flex flex-wrap gap-2">
           {wishlist.length > 0 ? (

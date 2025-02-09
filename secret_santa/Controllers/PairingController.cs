@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authorization;
 using secret_santa.Context;
 
 using secret_santa.Models;
@@ -24,6 +24,7 @@ namespace secret_santa.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpPost("pairUsers")]
         public async Task<IActionResult> PairUsers()
         {

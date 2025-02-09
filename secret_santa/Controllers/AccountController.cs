@@ -30,7 +30,7 @@ namespace secret_santa.Controllers
             if (!result.Succeeded) return BadRequest(result.Errors);
             await _userManager.AddToRoleAsync(user, "USER");
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return Ok(new { message = "User registered successfully!" });
+            return Ok(new { email = model.Email, role = "USER" });
         }
 
         [HttpPost("login")]
@@ -65,7 +65,7 @@ namespace secret_santa.Controllers
         [HttpGet("check-session")]
         public async Task<IActionResult> CheckSession()
         {
-            var user = await _userManager.GetUserAsync(User); // Get the current user
+            var user = await _userManager.GetUserAsync(User);  
             if (user == null)
             {
                 return Unauthorized(); 

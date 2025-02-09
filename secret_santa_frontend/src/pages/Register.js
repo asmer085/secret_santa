@@ -3,6 +3,8 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { Navigate } from 'react-router-dom';
+
 import '../App.css'; 
 
 function Register() {
@@ -10,8 +12,17 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
+
+  if(user){
+      if(user.role = "ADMIN") {
+        return <Navigate to="/admin" replace />;
+      }
+      else {
+        return <Navigate to="/user" replace />;
+      }
+    }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -25,6 +36,7 @@ function Register() {
     try {
       const response = await api.post('/Account/register', { email, password, confirmPassword });
       const userData = response.data;
+      console.log(response.data);
       login(userData); 
       navigate('/user'); 
     } catch (error) {

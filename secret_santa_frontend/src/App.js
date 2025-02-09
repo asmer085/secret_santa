@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import AdminPage from './pages/AdminPage';
 import UserPage from './pages/UserPage';
 import Register from './pages/Register';
+import ProtectedRoute from './services/ProtectedRoute';
 
 function App() {
   return (
@@ -13,8 +14,22 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/user" element={<UserPage />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute allowedRoles={['USER']}>
+                <UserPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </Router>

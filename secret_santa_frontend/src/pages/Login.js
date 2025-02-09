@@ -3,15 +3,24 @@ import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { Navigate } from 'react-router-dom';
 import '../App.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
+  if(user){
+    if(user.role = "ADMIN") {
+      return <Navigate to="/admin" replace />;
+    }
+    else {
+      return <Navigate to="/user" replace />;
+    }
+  }
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrors({});

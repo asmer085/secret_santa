@@ -6,18 +6,23 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using secret_santa.Models.DTO;
 
+using Microsoft.AspNetCore.Identity; 
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace secret_santa.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class WishlistController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public WishlistController(ApplicationDbContext context)
+        public WishlistController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -31,11 +36,20 @@ namespace secret_santa.Controllers
         }
 
         [HttpPost]
+        [Authorize]  
         public async Task<IActionResult> AddToWishlist([FromBody] WishlistDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var currentUserEmail = User.Identity.Name; 
+            var isAdmin = User.IsInRole("ADMIN"); 
+
+            if (request.UserEmail != currentUserEmail && !isAdmin)
+            {
+                return Forbid(); 
             }
 
             var wishlistItem = new Wishlist
@@ -50,14 +64,22 @@ namespace secret_santa.Controllers
             return Ok(new { message = "Item added to wishlist!" });
         }
 
-
         [HttpDelete("{id}")]
+        [Authorize] 
         public async Task<IActionResult> DeleteWishlistItem(int id)
         {
             var wishlistItem = await _context.Wishlists.FindAsync(id);
             if (wishlistItem == null)
             {
                 return NotFound();
+            }
+
+            var currentUserEmail = User.Identity.Name; 
+            var isAdmin = User.IsInRole("ADMIN"); 
+
+            if (wishlistItem.UserEmail != currentUserEmail && !isAdmin)
+            {
+                return Forbid(); 
             }
 
             _context.Wishlists.Remove(wishlistItem);
