@@ -42,7 +42,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
-
+using var noviScope = app.Services.CreateScope();
+var dbContext = noviScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+dbContext.Database.Migrate();
 // Create roles and admin user on application startup.
 using (var scope = app.Services.CreateScope())
 {
@@ -54,15 +56,9 @@ using (var scope = app.Services.CreateScope())
     await CreateAdminUserAsync(userManager);
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 app.UseRouting();

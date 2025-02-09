@@ -39,10 +39,10 @@ function Register() {
         {errors.form && <Alert variant="danger">{errors.form}</Alert>}
         <Form onSubmit={handleSubmit} className="login-form">
           <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label className="text-light fst-italic">Email</Form.Label>
+            <Form.Label className="text-light fst-italic">Username</Form.Label>
             <Form.Control
-              type="email"
-              placeholder="Enter email"
+              type="text"
+              placeholder="Enter username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
