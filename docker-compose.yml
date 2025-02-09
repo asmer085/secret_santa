@@ -1,24 +1,22 @@
 version: "3.8"
 
 services:
-  # MSSQL Database
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
     environment:
-      SA_PASSWORD: "Password1!" # Set a strong password for the 'sa' user
-      ACCEPT_EULA: "Y" # Accept the End User License Agreement
-      MSSQL_PID: "Express" # Use the free Express edition (optional)
-      MSSQL_DATABASE: "property_ecommerce" # Specify the database name to create
+      SA_PASSWORD: "Password1!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+      MSSQL_DATABASE: "secret_santa"
     ports:
-      - "1433:1433" # Expose port 1433 for external connections
+      - "1433:1433"
     volumes:
-      - mssql-data:/var/opt/mssql # Persist database data
-      - ./init.sql:/usr/src/init.sql # Mount initialization script
+      - mssql-data:/var/opt/mssql
+      - ./init.sql:/usr/src/init.sql
     networks:
       - app-network
 
-  # ASP.NET Web API Backend
   backend:
     build:
       context: ./secret_santa
@@ -26,33 +24,31 @@ services:
     container_name: backend
     ports:
       - "44395:8080"
-      - "44394:443" # Expose port 80 in the container as port 5000 on the host
+      - "44394:443"
     depends_on:
-      - mssql # Ensure the database is running before the backend
+      - mssql
     environment:
-      - ConnectionStrings__DefaultConnection=Server=mssql;Database= property_ecommerce;User Id=sa;Password=Password1!;TrustServerCertificate=true;
+      - ConnectionStrings__DefaultConnection=Server=mssql;Database= secret_santa;User Id=sa;Password=Password1!;TrustServerCertificate=true;
       - ASPNETCORE_URLS=https://+:443;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Password=Password1!
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
     networks:
       - app-network
 
-  # React Frontend
   frontend:
     build:
       context: ./secret_santa_frontend
       dockerfile: Dockerfile
     container_name: frontend
     ports:
-      - "3000:3000" # Expose port 80 in the container as port 3000 on the host
+      - "3000:3000"
     depends_on:
-      - backend # Ensure the backend is running before the frontend
+      - backend
     networks:
       - app-network
 
-# Volumes and Networks
 volumes:
-  mssql-data: # Volume to persist SQL Server data
+  mssql-data:
 
 networks:
   app-network:

@@ -7,10 +7,9 @@ import WishlistCard from '../components/WishlistCard';
 function AdminPage() {
   const [pairs, setPairs] = useState([]);
   const [error, setError] = useState('');
-  const [selectedUser, setSelectedUser] = useState(null); // Track selected user
+  const [selectedUser, setSelectedUser] = useState(null);
   const [showWishlist, setShowWishlist] = useState(false);
 
-  // Fetch pairs on first load
   useEffect(() => {
     const fetchPairs = async () => {
       try {
@@ -68,7 +67,7 @@ function AdminPage() {
                 <td
                   className="text-center"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering the row's click event
+                    e.stopPropagation(); 
                     handleRowClick(receiver);
                   }}
                 >
@@ -84,7 +83,7 @@ function AdminPage() {
           <div className="wishlist-card-wrapper">
             <WishlistCard
               userEmail={selectedUser}
-              isEditable={true} // Admin can always edit
+              isEditable={true} 
               onClose={() => setShowWishlist(false)}
             />
           </div>

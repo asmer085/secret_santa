@@ -19,7 +19,7 @@ function Login() {
     try {
       const response = await api.post('/Account/login', { email, password });
       const userData = response.data;
-      login(userData); // Save user data in context
+      login(userData);
       navigate(userData.role === 'ADMIN' ? '/admin' : '/user');
     } catch (error) {
       setErrors({ form: 'Invalid email or password' });

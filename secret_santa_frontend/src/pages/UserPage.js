@@ -11,7 +11,7 @@ function UserPage() {
   const [pair, setPair] = useState('');
   const [error, setError] = useState('');
   const [showWishlist, setShowWishlist] = useState(false);
-  const [wishlistType, setWishlistType] = useState(null); // 'view' or 'edit'
+  const [wishlistType, setWishlistType] = useState(null);  
   const { user } = useAuth();
 
   useEffect(() => {

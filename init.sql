@@ -1,2 +1,2 @@
-CREATE DATABASE property_ecommerce;
+CREATE DATABASE secret_santa;
 GO

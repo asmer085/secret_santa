@@ -27,10 +27,8 @@ namespace secret_santa.Controllers
         [HttpPost("pairUsers")]
         public async Task<IActionResult> PairUsers()
         {
-            // Fetch all users from the database
             var allUsers = _userManager.Users.ToList();
 
-            // Filter out the admin user and get only regular users
             var regularUsers = allUsers
                 .Where(user => !user.UserName.Contains("admin")) 
                 .Select(user => user.UserName)
@@ -41,7 +39,6 @@ namespace secret_santa.Controllers
 
             var shuffledUsers = Shuffle(regularUsers);
 
-            // Delete previous pairs
             _context.Pairs.RemoveRange(_context.Pairs);
             await _context.SaveChangesAsync();
 
@@ -49,7 +46,7 @@ namespace secret_santa.Controllers
             for (int i = 0; i < shuffledUsers.Count; i++)
             {
                 var giver = shuffledUsers[i];
-                var receiver = shuffledUsers[(i + 1) % shuffledUsers.Count]; // Wrap around to the first user
+                var receiver = shuffledUsers[(i + 1) % shuffledUsers.Count]; 
                 pairs.Add(new Pair { Giver = giver, Receiver = receiver });
             }
 
