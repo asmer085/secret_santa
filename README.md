@@ -19,6 +19,8 @@ The Secret Santa App is a web application designed to facilitate anonymous gift 
 
 ✔ User-Friendly Report – A clear and structured output lists all Secret Santa pairs.
 
+✔ User Wishlist – Users can see their pair's wishlist.
+
 
 ---
 
@@ -43,15 +45,30 @@ Follow these steps to run the project locally:
    ```bash
    cd secret_santa
    ```
-3. Install dependencies:  
+3. Start the application using Docker:  
    ```bash
-   npm install
+   docker-compose up --build
    ```
-4. Start the server:  
-   ```bash
-   npm start
-   ```
-5. Open `http://localhost:3000` in your browser.
+4. Open `http://localhost:3000` in your browser.
+
+## **⚠️	Important Note:**
+When running the application via Docker, you may encounter an issue where the frontend cannot access backend endpoints. 
+This happens because the browser blocks requests to the backend due to the use of a self-signed certificate (HTTPS). 
+To resolve this:
+
+Open **https://localhost:44394/swagger/index.html** in your browser.
+
+When prompted, allow access to the self-signed certificate. This will enable the browser to trust the backend.
+
+If the issue persists, restart the Docker containers by running:
+
+```bash
+docker-compose down
+docker-compose up --build
+```
+
+This issue occurs because the backend uses HTTPS with self-signed certificates (aspnetapp.crt and .pfx files), 
+which are not automatically trusted by browsers or operating systems (e.g., Linux).
 
 ---
 
