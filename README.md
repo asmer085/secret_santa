@@ -13,8 +13,6 @@ The Secret Santa App is a web application designed to facilitate anonymous gift 
 
 ✔ Unique Pairs – No duplicate pairings occur within a single run.
 
-✔ Handling Odd Participants – If an employee remains unpaired due to constraints, they are highlighted in the report.
-
 ✔ Dynamic Generation – Each new draw produces a different pairing combination.
 
 ✔ User-Friendly Report – A clear and structured output lists all Secret Santa pairs.
